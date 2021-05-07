@@ -10,20 +10,22 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 
-import day1.BrowserUtility;
-
 import org.testng.annotations.BeforeTest;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -41,6 +43,7 @@ public class TestWithPageFactory {
 	
   @Test(priority=0)
   public void tc01() {
+	  
 	  logger=extent.createTest("This is my TC01");
 	  logger.log(Status.INFO, MarkupHelper.createLabel("Running TC01", ExtentColor.INDIGO));
 	  hpf.get(); // it call Load and isLoaded() method automatically by implemting Loadable Compent class
@@ -77,8 +80,15 @@ public class TestWithPageFactory {
   }
   
   @BeforeTest
-  public void beforeTest() {
-	  driver=BrowserUtility.GetDrivers("chrome");
+  public void beforeTest() throws MalformedURLException {
+//	  driver=BrowserUtility.GetDrivers("chrome");
+	  DesiredCapabilities capability=new DesiredCapabilities();
+	  //set the Browser and Platform
+	  capability.setBrowserName("chrome");
+	  capability.setPlatform(Platform.WINDOWS);
+	  
+	  //RemoteWebDriver user to run your test on node machine
+	  driver=new RemoteWebDriver(new URL("http://localhost:5431/wd/hub"),capability);
 	  hpf=PageFactory.initElements(driver, HomepageFactory.class);
 	  rpf=PageFactory.initElements(driver, RegisterPageFactory.class);
 	  
